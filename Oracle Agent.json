@@ -1,0 +1,517 @@
+{
+  "name": "Oracle Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Ingestão de Arquivos ",
+        "height": 704,
+        "width": 1168,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        -512
+      ],
+      "id": "5dc0fb84-73cb-4dcb-bb01-b8be9e6ba205",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Agente RAG",
+        "height": 800,
+        "width": 832,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -512
+      ],
+      "id": "7f394c53-6b01-4382-b1e0-3927f85c9c94",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b6115aca-da93-45e1-9ed8-277a09c92a97",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        -400
+      ],
+      "id": "322d3452-36c8-4af2-ac6f-609a1a5d0283",
+      "name": "Webhook",
+      "webhookId": "b6115aca-da93-45e1-9ed8-277a09c92a97"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "11qgXjvLHmijQa7VDTWRbk7pv8PCWyp5A",
+          "mode": "list",
+          "cachedResultName": "oracle-data",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/11qgXjvLHmijQa7VDTWRbk7pv8PCWyp5A"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        -416
+      ],
+      "id": "921203fc-e029-4be4-bf6a-e2b0aa1a553b",
+      "name": "Criação de Arquivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8Q5Nceh0m9PuZO38",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "For all questions use this database. USE IT ALWAYS! If you don't find an answer here say you don't know the answer to this question and he should ask a human supervisor.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 20,
+        "useReranker": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        -64
+      ],
+      "id": "d3c3042f-df04-42f5-9026-0926f881b6e3",
+      "name": "Recolher Documentos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "tiKaqkIRHERSgoJg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "11qgXjvLHmijQa7VDTWRbk7pv8PCWyp5A",
+          "mode": "list",
+          "cachedResultName": "oracle-data",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/11qgXjvLHmijQa7VDTWRbk7pv8PCWyp5A"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        0
+      ],
+      "id": "885988c1-75ff-4016-b3dc-3b6d506b6a65",
+      "name": "Arquivo Atualizado",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8Q5Nceh0m9PuZO38",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-pro-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -192
+      ],
+      "id": "9c0efe08-9a5b-46fe-879f-507a279085c5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "e4apNnWzcGQvldgr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.rerankerCohere",
+      "typeVersion": 1,
+      "position": [
+        416,
+        112
+      ],
+      "id": "6ca9bf12-4a4c-44bb-8924-df416d41c525",
+      "name": "Reranker Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "8JZ8AfuVLgx6E9aW",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -256,
+        -160
+      ],
+      "id": "0f5dec34-a831-4dfd-aa32-4a82cb66b91f",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code Node (Node.js)\n// Input: JSON with a single property \"text\"\n// Output: One item per \"ARQX...\" section\n\n// Get input text\nconst input = $json[\"text\"];\n\n// Split by ARQ but keep the \"ARQ\" prefix in each section\nconst sections = input.split(/(?=ARQ\\d+)/);\n\n// Map each section into its own item\nreturn sections\n    .map(section => section.trim())\n    .filter(section => section.length > 0)\n    .map(section => {\n        return { json: { topic: section } };\n    });\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -608,
+        -208
+      ],
+      "id": "8241470b-8974-448e-b914-ea05793c2aee",
+      "name": "Filtragem de dados"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -208
+      ],
+      "id": "61240889-2c72-4902-bf1a-d36afc54910a",
+      "name": "Extrair do Arquivo"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "12eL8NL16SCQD9K4FUQpNGr6VLu1vBvO6",
+          "mode": "list",
+          "cachedResultName": "arq_tec.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/12eL8NL16SCQD9K4FUQpNGr6VLu1vBvO6/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -928,
+        -208
+      ],
+      "id": "203bffb2-28c7-4772-96bd-9302e18147e5",
+      "name": "Baixar Arquivo",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8Q5Nceh0m9PuZO38",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        640,
+        -400
+      ],
+      "id": "ae4a3513-3e0e-434a-82eb-03e66529dbba",
+      "name": "Responder o Webhook"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.message }}, {{ $json.body.action }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        -192
+      ],
+      "id": "030f6d06-6887-4d81-867e-0eec47d29158",
+      "name": "Postgres Memória",
+      "credentials": {
+        "postgres": {
+          "id": "l9RrZxSU5QjvSedH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        -400
+      ],
+      "id": "34760992-df98-4c33-86fb-8db0d0ad5f15",
+      "name": "Inserir Arquivos",
+      "credentials": {
+        "supabaseApi": {
+          "id": "tiKaqkIRHERSgoJg",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        32
+      ],
+      "id": "3e899f8c-0dce-49a3-ae88-2ccc4c4a580c",
+      "name": "Embeddings Google Gemini3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "e4apNnWzcGQvldgr",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}, {{ $json.body.action }}, {{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are ChatBW, an internal assistant that supports N1 analysts by explaining procedures, answering questions, and providing guidance strictly based on information available in the vector database.\n\nNever invent, simulate, or execute actions. If the requested information does not exist in the database, state this clearly.\n\nCore Principles:\n\nNaturalness: communicate clearly and conversationally, without robotic tone.\n\nObjectivity: start with a direct answer in one or two sentences, then provide context.\n\nFidelity: only use information from the database.\n\nTransparency: acknowledge uncertainties, inconsistencies, or missing data.\n\nScope: you explain and guide, but never execute or simulate actions.\n\nHow to Use the Vector Database:\n\nUse the user’s question as the retrieval query.\n\nRetrieve multiple relevant excerpts and check for consistency.\n\nPrioritize official manuals, procedures, and documented processes.\n\nIf sources conflict, present all versions and cite the document or procedure name.\n\nIf only partial data exists, say “Foram encontradas apenas instruções parciais” and share what is available.\n\nResponse Style:\n\nStart with a concise, direct answer.\n\nProvide a clear and professional explanation.\n\nUse numbered lists only when necessary for clarity.\n\nAlways cite the source document or instruction ID.\n\nIf there are multiple valid options, list them as clear alternatives with sources.\n\nIf the user’s question is ambiguous, ask one clarifying question only.\n\nContent Rules:\nInclude a direct answer, clear steps (if relevant), cited sources, notes on missing data, and related search suggestions.\nAvoid inventing data, simulating actions, adding irrelevant content, being repetitive, or asking multiple clarification questions.\n\nResponse Scenarios:\n\nComplete data found: provide full answer with sources.\n\nPartial data: state that the information is partial, show what exists, and suggest related searches.\n\nNo data found: say “Não encontrei informações sobre esse tópico na base de conhecimento atual” and suggest related documents or terms.\n\nGeneral Behavior:\nAlways return all relevant information completely.\nDo not summarize unless explicitly asked.\nDo not omit important details."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -400
+      ],
+      "id": "48ab61df-8916-4aa6-9b39-4cc3fdb06e36",
+      "name": "Oráculo"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Oráculo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Criação de Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Baixar Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recolher Documentos": {
+      "ai_tool": [
+        [
+          {
+            "node": "Oráculo",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Arquivo Atualizado": {
+      "main": [
+        [
+          {
+            "node": "Baixar Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Oráculo",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reranker Cohere": {
+      "ai_reranker": [
+        [
+          {
+            "node": "Recolher Documentos",
+            "type": "ai_reranker",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Inserir Arquivos",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtragem de dados": {
+      "main": [
+        [
+          {
+            "node": "Inserir Arquivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair do Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Filtragem de dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar Arquivo": {
+      "main": [
+        [
+          {
+            "node": "Extrair do Arquivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Memória": {
+      "ai_memory": [
+        [
+          {
+            "node": "Oráculo",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini3": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Inserir Arquivos",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Recolher Documentos",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Oráculo": {
+      "main": [
+        [
+          {
+            "node": "Responder o Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "oh8o4BIszB4w40Pe"
+  },
+  "versionId": "06d7347e-9a09-4e8d-b2ad-1e08b8846a8b",
+  "meta": {
+    "templateId": "knowledge_store_agent_with_google_drive",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "34eb11f43aab1c519bf018e47c738a29c1920ba09515be1b2abbea5decd22572"
+  },
+  "id": "oh8o4BIszB4w40Pe",
+  "tags": []
+}
